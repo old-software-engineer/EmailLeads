@@ -1,7 +1,6 @@
-import { Box, Button, Card, Divider, TextField, Typography } from '@mui/material'
+import { Box, Button, Card, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Header from './Header'
 import Overview from './overview';
 
 function Lead() {
