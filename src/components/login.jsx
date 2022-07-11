@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 import {useNavigate} from 'react-router-dom';
 
 
-function Login({history}) {
-    const [user, setUser] = useState();
-    const [users, setUsers] = useState()
+function Login() {
+    const [user, setUser] = useState({});
+    const [users, setUsers] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,16 +16,25 @@ function Login({history}) {
     }, [])
 
     const saveUser = async () => {
-        const users = await axios.get("http://zopto-challange.s3.amazonaws.com/users.json")
-        localStorage.setItem("users", JSON.stringify(users.data))
+        const users = await axios.get("http://zopto-challange.s3.amazonaws.com/users.json");
+        localStorage.hasOwnProperty('users') || localStorage.setItem("users", JSON.stringify(
+            users?.data?.map((user, index)=>{
+                return { ...user, id: index, positive: [], neutral: [], notLead: []}
+            })
+        ))
     }
+
     const saveLeads = async () => {
         const leads = await axios.get("https://zopto-challange.s3.amazonaws.com/leads.json")
-        localStorage.setItem("leads", JSON.stringify(leads.data))
+        localStorage.setItem("leads", JSON.stringify(
+            leads?.data?.map((lead, index)=>{
+                return { ...lead, id: index}
+            })
+        ))
     }
 
     const getUser = () => {
-        const user = JSON.parse(localStorage.getItem('users'))
+        const user = JSON.parse(localStorage.getItem('users'));
         setUsers([...user])
     }
 
@@ -40,6 +49,7 @@ function Login({history}) {
             userExpiryTime: Date.now() + 120,
             user: user
         }
+
         sessionStorage.setItem("userDetail", btoa(JSON.stringify(userDetail)))
         navigate("/lead");
     }
@@ -58,15 +68,21 @@ function Login({history}) {
                     {
                         users && users.map((user, id) => {
                             return (
-                                <MenuItem key={id} value={user.name}>{user.name}</MenuItem>
+                                <MenuItem key={id} value={user.id}>{user.name}</MenuItem>
                             )
                         })
                     }
                 </Select>
                 <br />
-                <Button style={{marginTop: "10px", color: "white", backgroundColor: "black", width: "150px", borderRadius: "20px", padding: "10px"}} disabled={!user} onClick={() => {
-                    handleSubmit()
-                }} variant="contained">Login</Button>
+                <Button
+                    style={{
+                        marginTop: "10px", color: "white", backgroundColor: "black", width: "150px", borderRadius: "20px", padding: "10px"}}
+                        disabled={!user}
+                        onClick={() => handleSubmit()}
+                        variant="contained"
+                >
+                    Login
+                </Button>
             </div >
             <div style={{display: "block", width: "33.33%"}}></div>
         </div>
