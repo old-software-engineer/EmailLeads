@@ -1,27 +1,36 @@
-import { ContactsOutlined } from '@mui/icons-material'
-import { Box, Button, TextField } from '@mui/material'
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import { Button } from '@mui/material'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from './Header'
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom'
 
 function Overview() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const leadsData = JSON.parse(localStorage.getItem("leads"));
-    const users = JSON.parse(localStorage.getItem('users'))
-    const leadId = parseInt(searchParams.get('idea'));
+    const users = JSON.parse(localStorage.getItem('users'));
+    const leadId = parseInt(searchParams.get('lead'));
     const lead = leadsData.filter( lead => lead?.id == leadId)[0]
     const totalPositive = users?.filter( user => user.positive.includes(leadId))?.length || 0;
     const totalNotLead = users?.filter( user => user.notLead.includes(leadId))?.length || 0;
     const totalNeutral = users?.filter( user => user.neutral.includes(leadId))?.length || 0;
-        
+
+    useEffect(() => {
+        const userSession = sessionStorage.getItem("userDetail");
+        if(!userSession)
+            navigate('/session-expired')
+    }, [])
+
+    const resetApplication = () => {
+        localStorage.clear();
+        sessionStorage.removeItem('userDetail');
+        navigate('/')
+    }
+
     return(
         <div style={{padding: "25px"}}>
             <div style={{display: 'flex', padding: "15px 0px"}}>
                 <div style={{display: 'flex', width: "33.33%"}}>
-                    <Button style={{borderRadius: "20px", backgroundColor: "black", width: "200px"}} variant='contained' onClick={() => {  }} >
+                    <Button style={{borderRadius: "20px", backgroundColor: "black", width: "200px"}} variant='contained' onClick={() => { resetApplication() }} >
                         RESET APPLICATION
                     </Button>
                 </div>
